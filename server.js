@@ -36,7 +36,7 @@ app.post('/addmovie', async (req, res) => {
     const { title, genre, rating } = req.body;
     try {
         let connection = await mysql.createConnection(dbConfig);
-        await connection.execute('INSERT INTO movie (title, genre, rating) VALUES (?, ?)', [card_name, card_pic]);
+        await connection.execute('INSERT INTO movie (title, genre, rating) VALUES (?, ?)', [title, genre, rating]);
         res.status(201).json({ message: 'Movie '+title+'added successfully' });
     } catch (err){
         console.error(err);

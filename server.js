@@ -33,7 +33,7 @@ app.get('/allmovies', async (req, res) => {
 });
 
 app.post('/addmovie', async (req, res) => {
-    const { card_name, card_pic } = req.body;
+    const { title, genre, rating } = req.body;
     try {
         let connection = await mysql.createConnection(dbConfig);
         await connection.execute('INSERT INTO movie (title, genre, rating) VALUES (?, ?)', [card_name, card_pic]);

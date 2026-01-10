@@ -36,7 +36,7 @@ app.post('/addmovie', async (req, res) => {
     const { title, genre, rating } = req.body;
     try {
         let connection = await mysql.createConnection(dbConfig);
-        await connection.execute('INSERT INTO movie (title, genre, rating) VALUES (?, ?)', [title, genre, rating]);
+        await connection.execute('INSERT INTO movies (title, genre, rating) VALUES (?, ?, ?)', [title, genre, rating]);
         res.status(201).json({ message: 'Movie '+title+'added successfully' });
     } catch (err){
         console.error(err);
@@ -48,17 +48,35 @@ app.put("/movies/:id", async (req, res) => {
     const { id } = req.params;
     const { title, genre, rating } = req.body;
 
-    const result = await pool.query(
-        "UPDATE movies SET title=$1, genre=$2, rating=$3 WHERE id=$4 RETURNING *",
-        [title, genre, rating, id]
-    );
+    try {
+        let connection = await mysql.createConnection(dbConfig);
 
-    res.json(result.rows[0]);
+        await connection.execute(
+            'UPDATE movies SET title = ?, genre = ?, rating = ? WHERE id = ?',
+            [title, genre, rating, id]
+        );
+
+        res.json({ message: 'Movie updated successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error - could not update movie' });
+    }
 });
 
-app.delete("/movies/:id", async (req, res) => {
+app.delete('/movies/:id', async (req, res) => {
     const { id } = req.params;
 
-    await pool.query("DELETE FROM movies WHERE id=$1", [id]);
-    res.json({ message: "Movie deleted" });
+    try {
+        let connection = await mysql.createConnection(dbConfig);
+
+        await connection.execute(
+            'DELETE FROM movies WHERE id = ?',
+            [id]
+        );
+
+        res.json({ message: 'Movie deleted successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error - could not delete movie' });
+    }
 });
